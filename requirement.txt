@@ -1,0 +1,9 @@
+torch
+torchvision
+torchaudio
+mne
+numpy
+pyyaml
+tqdm
+scipy
+scikit-learn

@@ -1,0 +1,68 @@
+# ISRUC Sleep Staging을 위한 설정 파일 (시퀀스 처리)
+run_name: 'CBraMod_finetune_ISRUC'
+mode: 'finetune'
+seed: 42
+
+data:
+  path: '/path/to/isruc-sleep'
+  batch_size: 16 # 시퀀스 데이터이므로 배치 사이즈 조절
+  params:
+    name: 'ISRUC'
+    task_type: 'classification'
+    num_classes: 5 # W, N1, N2, N3, REM
+    original_sfreq: 200
+    resample_sfreq: 200
+    segment_duration_s: 30
+    sequence_length: 20 # 20개의 30초 에폭을 하나의 시퀀스로
+    common_channels: ['F3-A2', 'C3-A2', 'O1-A2', 'F4-A1', 'C4-A1', 'O2-A1']
+    bandpass_freq: [0.3, 40]
+    normalize_unit_uv: 100.0
+
+model:
+  name: 'EEGFoundationModel'
+  embedding_dim: 200
+  
+  patch_encoder:
+    in_channels: 6
+    signal_length: 6000 # 200Hz * 30s
+    patch_size: 200 # 1초 패치
+    out_dim: 200
+  
+  positional_encoder:
+    in_dim: 200
+    kernel_size: [6, 7]
+  
+  backbone:
+    name: 'CBraModBackbone'
+    num_channels: 6
+    num_patches_per_channel: 30
+    embedding_dim: 200
+    depth: 12
+    heads: 8
+    mlp_dim: 800
+
+  # 시퀀스 인코더 설정 추가
+  sequence_encoder:
+    embedding_dim: 200
+    depth: 1 # 논문에 명시된 1-layer transformer
+    heads: 8
+    mlp_dim: 512
+    dropout: 0.1
+
+  head:
+    name: 'ClassificationHead'
+    in_dim: 200
+    hidden_dim: 256
+    num_classes: 5
+    dropout: 0.1
+    use_mean_pooling: false # 시퀀스 인코더 출력을 그대로 사용
+
+training:
+  epochs: 50
+  optimizer: 'AdamW'
+  learning_rate: 0.0001
+  weight_decay: 0.05
+  scheduler: 'ReduceLROnPlateau'
+  monitor_metric: 'cohen_kappa'
+  pretrained_path: './pretrained_weights/cbra_mod_pretrained.pth'
+  output_dir: './outputs/finetune_isruc'

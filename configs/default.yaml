@@ -1,0 +1,88 @@
+# -*- coding: utf-8 -*-
+# """
+# default.yaml
+# [기능 추가] 각 학습 단계(pretrain, finetune, evaluation)에서
+# 사용할 데이터셋 목록을 정의하는 'process' 섹션을 추가합니다.
+# [서식 수정] common_channels 목록을 한 줄로 표현합니다.
+# """
+system:
+  device: 'cuda_if_available'
+  seed: 42
+
+model_selection: 'CBraMod'
+
+model:
+  CBraMod:
+    embedding_dim: 200
+    patch_encoder:
+      name: 'TimeFreqPatchEncoder'
+      patch_length: 200
+      out_channels: 25
+    positional_encoder:
+      name: 'AsymmetricConditionalPositionalEncoder'
+      kernel_size_spatial: 19
+      kernel_size_temporal: 7
+    backbone:
+      name: 'CBraModBackbone'
+      depth: 12
+      heads: 8
+      mlp_dim: 800
+      dropout: 0.1
+    classification_head:
+      name: 'ClassificationHead'
+      pooling_mode: 'mean'
+      fc_depth: 2
+      hidden_dim: 256
+      dropout: 0.1
+      activation: 'relu'
+
+pretrain_strategy:
+  name: 'MAE'
+  MAE:
+    mask_ratio: 0.75
+    reconstruction_head:
+      name: 'ReconstructionHead'
+
+training:
+  pretrain:
+    epochs: 40
+    batch_size: 128
+    learning_rate: 5.0e-4
+    weight_decay: 0.05
+    save_path: null # './checkpoints/pretrained_cbra.pth'
+    checkpoint_path: null
+  finetune:
+    epochs: 50
+    batch_size: 64
+    learning_rate: 1.0e-4
+    weight_decay: 0.01
+    checkpoint_path: ./checkpoints/pretrained_cbra.pth
+    save_path: './checkpoints/finetuned_cbra.pth'
+
+data_handling:
+  num_workers: 4
+  common_channels: &common_channels ['Fp1', 'Fp2', 'F7', 'F3', 'Fz', 'F4', 'F8', 'T3', 'C3', 'Cz', 'C4', 'T4', 'T5', 'P3', 'Pz', 'P4', 'T6', 'O1', 'O2']
+  
+  # --- 워크플로우별 데이터셋 목록 ---
+  process:
+    pretrain:
+      # 자가 학습(Self-supervised)에 사용할 대규모 데이터셋 목록
+      - TUEG # Temple University Hospital EEG Corpus
+    finetune:
+      # 미세 조정 및 평가에 사용할 다운스트림 태스크 데이터셋 목록
+      - FACED
+      # - SEED
+      # - PhysioNetMI
+      # - BCICompetitionIV2a
+      # - ISRUC
+      # - CHBMIT
+      # - Mumtaz
+      # - MentalArithmetic
+      # - TUAB
+      # - TUEV
+    evaluation:
+      # 별도의 평가 전용 데이터셋이 있을 경우 여기에 명시
+      # finetune 목록과 중복될 수 있음
+      - BCICompetitionIV2a
+      - CHBMIT
+

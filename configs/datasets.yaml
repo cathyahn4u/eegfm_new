@@ -1,0 +1,144 @@
+# -*- coding: utf-8 -*-
+# """
+# datasets.yaml
+# [기능 추가] 대규모 사전 학습을 위한 TUEG 데이터셋의 상세 정보를 추가합니다.
+# """
+datasets:
+  properties:
+    # --- Pre-training Dataset ---
+    TUEG:
+      path: '~/eeg_data/TUH_EEG_Corpus/edf' # TUEG 데이터셋의 최상위 edf 폴더 경로
+      sampling_rate: 256 # 원본 샘플링 레이트 (참고용)
+      duration_secs: 30 # 사전 학습에 사용할 에포크 길이
+      montage:
+        type: pick
+        channels: ['Fp1', 'Fp2', 'F7', 'F3', 'Fz', 'F4', 'F8', 'T3', 'C3', 'Cz', 'C4', 'T4', 'T5', 'P3', 'Pz', 'P4', 'T6', 'O1', 'O2']
+      split_info:
+        # 파일 목록을 기준으로 학습/검증 세트 분할 비율
+        train_ratio: 0.95
+        val_ratio: 0.05
+        test_ratio: 0.0 # 사전 학습에서는 테스트 세트 불필요
+      preprocess_params:
+        min_duration_mins: 5 # 최소 5분 이상인 레코딩만 사용
+        crop_mins: 1 # 각 레코딩의 처음과 끝 1분씩 제거
+        l_freq: 0.3
+        h_freq: 75.0
+        resample_freq: 200
+        notch_freq: 60
+        amplitude_threshold_uv: 100 # 이 값을 초과하는 진폭을 가진 에포크는 제거
+
+    # --- (기존 다른 데이터셋 설정들은 여기에 유지됩니다) ---
+    FACED:
+      path: '~/eeg_data/FACED/Processed_data'
+      num_classes: 9
+      sampling_rate: 250
+      duration_secs: 10
+      montage:
+        type: pick
+        channels: ['Fp1', 'AF7', 'AF3', 'F1', 'F3', 'F5', 'F7', 'FT7', 'FC5', 'FC3', 'FC1', 'C1', 'C3', 'C5', 'T7', 'TP7', 'CP5', 'CP3', 'CP1', 'P1', 'P3', 'P5', 'P7', 'P9', 'PO7', 'PO3', 'O1', 'Iz', 'Oz', 'POz', 'Pz', 'CPz']
+      split_info: { train: [1, 80], val: [81, 100], test: [101, 123] }
+      preprocess_params: { resample_freq: 200 }
+
+    SEED:
+      path: '~/eeg_data/SEED/Preprocessed_EEG'
+      num_classes: 3
+      sampling_rate: 200
+      duration_secs: 1
+      montage:
+        type: pick
+        channels: ['Fp1', 'Fpz', 'Fp2', 'AF3', 'AF4', 'F7', 'F5', 'F3', 'F1', 'Fz', 'F2', 'F4', 'F6', 'F8', 'FT7', 'FC5', 'FC3', 'FC1', 'FCz', 'FC2', 'FC4', 'FC6', 'FT8', 'T7', 'C5', 'C3', 'C1', 'Cz', 'C2', 'C4', 'C6', 'T8', 'TP7', 'CP5', 'CP3', 'CP1', 'CPz', 'CP2', 'CP4', 'CP6', 'TP8', 'P7', 'P5', 'P3', 'P1', 'Pz', 'P2', 'P4', 'P6', 'P8', 'PO7', 'PO5', 'PO3', 'POz', 'PO4', 'PO6', 'PO8', 'O1', 'Oz', 'O2']
+      split_info: { train: [1, 9], val: [10, 12], test: [13, 15] }
+      preprocess_params: { normalize: True }
+
+    PhysioNetMI:
+      # path: '~/eeg_data/PhysioNetMI'
+      path: '~/mne_data'
+      num_classes: 4
+      sampling_rate: 160
+      duration_secs: 4
+      montage:
+        type: pick
+        channels: ['FC5', 'FC3', 'FC1', 'FCz', 'FC2', 'FC4', 'FC6', 'C5', 'C3', 'C1', 'Cz', 'C2', 'C4', 'C6', 'CP5', 'CP3', 'CP1', 'CPz', 'CP2', 'CP4', 'CP6', 'Fp1', 'Fpz', 'Fp2', 'AF7', 'AF3', 'AFz', 'AF4', 'AF8', 'F7', 'F5', 'F3', 'F1', 'Fz', 'F2', 'F4', 'F6', 'F8', 'FT7', 'FT8', 'T7', 'T8', 'T9', 'T10', 'TP7', 'TP8', 'P7', 'P5', 'P3', 'P1', 'Pz', 'P2', 'P4', 'P6', 'P8', 'PO7', 'PO3', 'POz', 'PO4', 'PO8', 'O1', 'Oz', 'O2', 'Iz']
+      split_info: { train: [1, 70], val: [71, 89], test: [90, 109] }
+      preprocess_params: { resample_freq: 200 }
+
+    BCICompetitionIV2a:
+      path: '~/mne_data/MNE-bci-data/physiobank/database/BCIcompetitionIV/2a/'
+      num_classes: 4
+      sampling_rate: 250
+      duration_secs: 4
+      montage:
+        type: pick
+        channels: ['Fz', 'FC3', 'FC1', 'FCz', 'FC2', 'FC4', 'C5', 'C3', 'C1', 'Cz', 'C2', 'C4', 'C6', 'CP3', 'CP1', 'CPz', 'CP2', 'CP4', 'P1', 'Pz', 'P2', 'POz']
+      split_info: { train: [1, 5], val: [6, 7], test: [8, 9] }
+      label_mapping: { '769': 0, '770': 1, '771': 2, '772': 3 }
+      preprocess_params: { l_freq: 0.5, h_freq: 40.0, resample_freq: 200 }
+
+    ISRUC:
+      path: '~/eeg_data/isruc/subgroupI'
+      num_classes: 5
+      sampling_rate: 200
+      duration_secs: 30
+      montage:
+        type: pick
+        channels: ['F3-A2', 'C3-A2', 'O1-A2', 'F4-A1', 'C4-A1', 'O2-A1']
+      split_info: { train: [1, 80], val: [81, 90], test: [91, 100] }
+      is_sequence_task: True
+      sequence_length: 20
+      preprocess_params: { l_freq: 0.3, h_freq: 35.0 }
+      
+    CHBMIT:
+      path: '~/mne_data/MNE-chbmit-data/chb-mit-scalp-eeg-database-1.0.0/'
+      num_classes: 2
+      sampling_rate: 256
+      duration_secs: 10
+      montage:
+        type: bipolar
+        channels: ['Fp1-F7', 'F7-T7', 'T7-P7', 'P7-O1', 'Fp2-F8', 'F8-T8', 'T8-P8', 'P8-O2', 'Fp1-F3', 'F3-C3', 'C3-P3', 'P3-O1', 'Fp2-F4', 'F4-C4', 'C4-P4', 'P4-O2']
+      split_info: { train: [1, 19], val: [20, 21], test: [22, 23] }
+      preprocess_params: { resample_freq: 200 }
+
+    Mumtaz:
+      path: '~/eeg_data/Mumtaz2016'
+      num_classes: 2
+      sampling_rate: 256
+      duration_secs: 5
+      montage:
+        type: pick
+        channels: ['Fp1', 'Fp2', 'F7', 'F3', 'Fz', 'F4', 'F8', 'T3', 'C3', 'Cz', 'C4', 'T4', 'T5', 'P3', 'Pz', 'P4', 'T6', 'O1', 'O2']
+      split_info: { train: [1, 43], val: [44, 52], test: [53, 64] }
+      preprocess_params: { l_freq: 0.3, h_freq: 75.0, resample_freq: 200, notch_freq: 50 }
+
+    MentalArithmetic:
+      path: '~/eeg_data/MentalArithmetic/edf'
+      num_classes: 2
+      sampling_rate: 500
+      duration_secs: 5
+      montage:
+        type: pick
+        channels: ['Fp1', 'Fp2', 'F7', 'F3', 'Fz', 'F4', 'F8', 'T7', 'C3', 'Cz', 'C4', 'T8', 'P7', 'P3', 'Pz', 'P4', 'P8', 'O1', 'O2']
+      split_info: { train: [1, 28], val: [29, 32], test: [33, 36] }
+      preprocess_params: { l_freq: 0.5, h_freq: 45.0, resample_freq: 200 }
+    
+    TUAB:
+      path: '/path/to/TUAB'
+      num_classes: 2
+      sampling_rate: 250
+      duration_secs: 10
+      montage:
+        type: bipolar
+        channels: ['Fp1-F7', 'F7-T3', 'T3-T5', 'T5-O1', 'Fp2-F8', 'F8-T4', 'T4-T6', 'T6-O2', 'Fp1-F3', 'F3-C3', 'C3-P3', 'P3-O1', 'Fp2-F4', 'F4-C4', 'C4-P4', 'P4-O2']
+      split_info: { train_ratio: 0.8 }
+      preprocess_params: { l_freq: 0.3, h_freq: 75.0, resample_freq: 200, notch_freq: 60 }
+      
+    TUEV:
+      path: '/path/to/TUEV'
+      num_classes: 6
+      sampling_rate: 250
+      duration_secs: 5
+      montage:
+        type: bipolar
+        channels: ['Fp1-F7', 'F7-T3', 'T3-T5', 'T5-O1', 'Fp2-F8', 'F8-T4', 'T4-T6', 'T6-O2', 'Fp1-F3', 'F3-C3', 'C3-P3', 'P3-O1', 'Fp2-F4', 'F4-C4', 'C4-P4', 'P4-O2']
+      split_info: { train_ratio: 0.8 }
+      preprocess_params: { l_freq: 0.3, h_freq: 75.0, resample_freq: 200, notch_freq: 60 }
+
