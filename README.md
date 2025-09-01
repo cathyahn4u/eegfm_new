@@ -53,7 +53,7 @@
   1.  프로젝트를 생성합니다. (이 스크립트를 실행)
   2.  필요한 라이브러리를 설치합니다.
   ```bash
-  pip install -r eeg_fm_platform/requirements.txt
+  pip install -r requirements.txt
   ```
   3.  `configs/datasets.yaml` 파일을 열어 각 데이터셋의 실제 경로(`path`)를 자신의 환경에 맞게 수정합니다.
 
@@ -62,7 +62,7 @@
   실제 데이터를 다운로드하기 전에, 전체 파이프라인이 정상적으로 동작하는지 더미 데이터를 이용해 빠르게 확인할 수 있습니다.
 
   ```bash
-  python eeg_fm_platform/dummy_train_test.py
+  python dummy_train_test.py
   ```
 
   ### 4.3. 미세 조정 (Fine-tuning) 실행
@@ -71,7 +71,7 @@
   2.  `main.py`를 실행하여 미세 조정을 시작합니다.
   
       ```bash
-      python eeg_fm_platform/main.py --config eeg_fm_platform/configs/experiments/finetune_chbmit.yaml
+      python main.py --config ./configs/experiments/finetune_chbmit.yaml
       ```
 
   ### 4.4. 사전 학습 (Pre-training) 실행
@@ -80,7 +80,7 @@
   2.  `main.py`를 실행하여 사전 학습을 시작합니다.
 
       ```bash
-      python eeg_fm_platform/main.py --config path/to/your/pretrain_config.yaml
+      python main.py --config path/to/your/pretrain_config.yaml
   ## 5. 확장 방법 (How to Extend)
 
   ### 5.1. 새로운 데이터셋 추가하기
